@@ -9,15 +9,13 @@ d3.json(queryUrl, function(data) {
 
   function createFeatures(earthquakeData) {
   
-    // Define a function we want to run once for each feature in the features array
     // Give each feature a popup describing the place and time of the earthquake
     function onEachFeature(feature, layer) {
       layer.bindPopup("<h3>" + feature.properties.place +
         "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
     }
-// Define colors depending on the magnituge of the earthquake
 
-  function colorRange(mag) {
+  function magColors(mag) {
 
       switch (true) {
         case mag >= 5.0:
@@ -39,19 +37,17 @@ d3.json(queryUrl, function(data) {
           return 'white';  
       };
       };
-
 // // Function to determine marker size based on magnitude???
     function markerSize(mag) {
         return mag * 2;
       };
-
 
     var earthquakes = L.geoJSON(earthquakeData, {
 
       pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, {
             radius: markerSize(feature.properties.mag),
-            fillColor: colorRange(feature.properties.mag),
+            fillColor: magColors(feature.properties.mag),
             color: "white",
             weight: 0.5,
             opacity: 0.5,
@@ -60,23 +56,15 @@ d3.json(queryUrl, function(data) {
       },
       onEachFeature: onEachFeature
     });
-      // Sending our earthquakes layer to the createMap function
       createMap(earthquakes);
-  
-
-// Class Acivity 17-1-10
 
 function createMap(earthquakes) {
 
   // Define streetmap and darkmap layers
   var quakemap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",  
-  // attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
-    // tileSize: 512,
     maxZoom: 8,
-    // zoomOffset: -1,
     id: "mapbox/streets-v11",
-    // id: "mapbox.satellite",
     accessToken: API_KEY
   });
 
@@ -107,40 +95,30 @@ function createMap(earthquakes) {
     layers: [quakemap, earthquakes]
   });
 
-  // Create a layer control
-  // Pass in our baseMaps and overlayMaps
-  // Add the layer control to the map
+  // Create a layer control, Pass in our baseMaps and overlayMaps, Add the layer control to the map
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
 }
+  //Legend code found on LeafletJS.com Chloropleth example
+  // var legend = L.control({position: 'leaflet-bottom-leaflet-left'});
+  var legend = L.control({position: 'bottom'});
 
-//   // Set up the legend
-//   var legend = L.control({ position: "bottomright" });
+  legend.onAdd = function (map) {
 
-//   legend.onAdd = function() {
-//     var div = L.DomUtil.create("div", "info legend");
-//     var limits = geojson.options.limits;
-//     var colors = geojson.options.colors;
-//     var labels = [];
+    var makeLegend = L.DomUtil.create('div', 'info legend'),
+        grades = [1, 2, 3, 4, 5];
+        // labels = [];
 
-//     // Add min & max
-//     var legendInfo = "<h1>Median Income</h1>" +
-//       "<div class=\"labels\">" +
-//         "<div class=\"min\">" + limits[0] + "</div>" +
-//         "<div class=\"max\">" + limits[limits.length - 1] + "</div>" +
-//       "</div>";
+    // loop through our density intervals and generate a label with a colored square for each interval
+    for (var i = 0; i < grades.length; i++) {
+        makeLegend.innerHTML +=
+            '<i style="background:' + magColors(grades[i] + 1) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
 
-//     div.innerHTML = legendInfo;
+    return makeLegend;
+};
 
-//     limits.forEach(function(limit, index) {
-//       labels.push("<li style=\"background-color: " + colors[index] + "\"></li>");
-//     });
-
-//     div.innerHTML += "<ul>" + labels.join("") + "</ul>";
-//     return div;
-//   };
-
-//   // Adding legend to the map
-//   legend.addTo(myMap);
-  }
+legend.addTo(map);
+}
