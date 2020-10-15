@@ -12,7 +12,6 @@ html {
 .leaflet-popup-content {
   text-align: center;
 }
-
 /* CSS from the Leaflet-Choropleth documentation */
 .legend {
   padding: 6px 8px;

@@ -37,7 +37,7 @@ function magColors(mag) {
   };
   };
 
-// // Function to determine marker size based on magnitude???
+// // Function to determine marker size based on magnitude
 function markerSize(mag) {
     return mag * 2;
   };
