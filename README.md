@@ -4,4 +4,4 @@
 
 #### Use multiple overlays on map to make interactive and visually appealing.
 
-![heatmap of earthquake data](https://github.com/brookecrofts/leaflet_challenge/Earthquakes.png)
+![heatmap of earthquake data](https://github.com/brookecrofts/leaflet_challenge/blob/main/Earthquakes.PNG)
